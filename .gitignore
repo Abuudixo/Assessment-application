@@ -32,3 +32,20 @@ Server/.env
 .env
 .env.local
 .env.production
+
+# Python compiled files
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python virtual environments
+.venv/
+venv/
+ENV/
+
+# Python test caches
+.pytest_cache/
+
+# Databases
+Model/backend/mental_health.db

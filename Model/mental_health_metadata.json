@@ -1,0 +1,78 @@
+{
+  "feature_names": [
+    "q1",
+    "q2",
+    "q3",
+    "q4",
+    "q5",
+    "q6",
+    "q7",
+    "q8",
+    "q9",
+    "q10",
+    "q11",
+    "q12",
+    "q13",
+    "q14",
+    "q15",
+    "q16",
+    "q17",
+    "q18",
+    "q19",
+    "q20",
+    "q21",
+    "q22",
+    "q23",
+    "q24",
+    "q25",
+    "anxiety_score",
+    "depression_score",
+    "stress_score",
+    "attention_score",
+    "trauma_score"
+  ],
+  "classes": [
+    "ADHD",
+    "Anxiety",
+    "Depression",
+    "Healthy",
+    "PTSD"
+  ],
+  "category_definitions": {
+    "anxiety_score": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5"
+    ],
+    "depression_score": [
+      "q6",
+      "q7",
+      "q8",
+      "q9",
+      "q10"
+    ],
+    "stress_score": [
+      "q11",
+      "q12",
+      "q13",
+      "q14",
+      "q15"
+    ],
+    "attention_score": [
+      "q16",
+      "q17",
+      "q18",
+      "q19",
+      "q20"
+    ],
+    "trauma_score": [
+      "q21",
+      "q22",
+      "q23",
+      "q24",
+      "q25"
+    ]
+  }
+}
