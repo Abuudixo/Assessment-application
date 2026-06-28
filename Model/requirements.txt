@@ -13,3 +13,6 @@ google-auth
 pytest
 httpx
 pytest-asyncio
+pymysql
+cryptography
+
