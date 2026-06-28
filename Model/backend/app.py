@@ -13,8 +13,6 @@ from . import schemas
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from typing import Optional
-import gspread
-from google.oauth2.service_account import Credentials
 
 MODEL_FILE = Path(__file__).resolve().parent.parent / "mental_health_rf_model.joblib"
 METADATA_FILE = Path(__file__).resolve().parent.parent / "mental_health_metadata.json"
@@ -32,59 +30,6 @@ app.add_middleware(
 # Environment
 import os
 ENV = os.environ.get('MH_ENV', 'development')
-GOOGLE_SHEET_ID = os.environ.get('GOOGLE_SHEET_ID', '1ltDXoIvCisCPTMRZm0zIm_160UON4S0cdMWN6eKe348')
-GOOGLE_SERVICE_ACCOUNT_FILE = os.environ.get('GOOGLE_SERVICE_ACCOUNT_FILE')
-GOOGLE_SERVICE_ACCOUNT_JSON = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON')
-
-
-def get_sheets_client():
-    if not GOOGLE_SHEET_ID:
-        return None
-    creds = None
-    if GOOGLE_SERVICE_ACCOUNT_JSON:
-        try:
-            info = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
-            creds = Credentials.from_service_account_info(info, scopes=["https://www.googleapis.com/auth/spreadsheets"])
-        except Exception:
-            return None
-    elif GOOGLE_SERVICE_ACCOUNT_FILE:
-        try:
-            creds = Credentials.from_service_account_file(GOOGLE_SERVICE_ACCOUNT_FILE, scopes=["https://www.googleapis.com/auth/spreadsheets"])
-        except Exception:
-            return None
-    else:
-        return None
-
-    try:
-        return gspread.authorize(creds)
-    except Exception:
-        return None
-
-
-def append_assessment_to_sheet(user, assessment):
-    client = get_sheets_client()
-    if not client:
-        return
-
-    try:
-        sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
-        timestamp = assessment.created_at.isoformat() if assessment.created_at else datetime.utcnow().isoformat()
-        category_scores = assessment.result.get("category_scores", {})
-        category_summary = "; ".join([f"{k}: {v}" for k, v in category_scores.items()])
-        row = [
-            timestamp,
-            getattr(user, 'email', 'anonymous'),
-            getattr(user, 'name', ''),
-            assessment.id,
-            assessment.result.get('predicted_condition'),
-            assessment.result.get('confidence_score'),
-            category_summary,
-            json.dumps(assessment.answers, ensure_ascii=False),
-            json.dumps(assessment.result, ensure_ascii=False),
-        ]
-        sheet.append_row(row, value_input_option='USER_ENTERED')
-    except Exception as e:
-        print('Failed to append assessment to Google Sheet:', str(e))
 
 
 @app.middleware("http")
@@ -243,8 +188,6 @@ def create_assessment(payload: dict, db: Session = Depends(get_db), current_user
     db.add(assessment)
     db.commit()
     db.refresh(assessment)
-
-    append_assessment_to_sheet(current_user, assessment)
 
     return {"id": assessment.id, "result": result}
 

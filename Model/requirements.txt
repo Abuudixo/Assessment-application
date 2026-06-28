@@ -8,9 +8,8 @@ sqlalchemy
 passlib[bcrypt]
 python-jose
 pydantic
-gspread
-google-auth
 pytest
+
 httpx
 pytest-asyncio
 pymysql
