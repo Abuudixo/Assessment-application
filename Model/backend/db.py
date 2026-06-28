@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -14,12 +15,17 @@ MYSQL_DB = os.getenv("MYSQL_DB", "defaultdb")
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
 
-# Enable SSL for Aiven MySQL
+# Enable SSL for Aiven MySQL with CA verification
+DB_DIR = Path(__file__).resolve().parent
+CA_PATH = DB_DIR / "ca.pem"
+
 connect_args = {
     "ssl": {
         "ssl_mode": "REQUIRED"
     }
 }
+if CA_PATH.exists():
+    connect_args["ssl"]["ssl_ca"] = str(CA_PATH)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
